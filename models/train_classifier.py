@@ -19,6 +19,16 @@ from sklearn.model_selection import train_test_split
 import pickle
 
 def load_data(database_filepath):
+    """
+    Load and preprocess data from a SQLite database.
+
+    Parameters:
+        database_filepath (str): Filepath of the SQLite database.
+
+    Returns:
+        X (pandas Series): Messages.
+        Y (pandas DataFrame): Categories.
+    """
     engine = create_engine(f'sqlite:///{database_filepath}')
     print(f'sqlite:///{database_filepath}')
     df = pd.read_sql_table('messages_clean_table',con=engine)
@@ -27,7 +37,15 @@ def load_data(database_filepath):
     return X,Y
 
 def tokenize(text):
-    
+    """
+    Tokenize and preprocess input text.
+
+    Parameters:
+        text (str): Input text.
+
+    Returns:
+        words (list): List of preprocessed words.
+    """
     text = re.sub(r"[^a-zA-Z0-9]", " ", text.lower())
     
     words = word_tokenize(text)
@@ -40,6 +58,12 @@ def tokenize(text):
 
 
 def build_model():
+    """
+    Build a text classification model pipeline.
+
+    Returns:
+        pipeline (sklearn Pipeline): Model pipeline.
+    """
     vectorizer = TfidfVectorizer( tokenizer=tokenize ,use_idf=True, smooth_idf=True, sublinear_tf=False)
 
     rf = RandomForestClassifier(random_state=123)
@@ -51,6 +75,14 @@ def build_model():
     return pipeline
 
 def evaluate_model(model, X_test, Y_test):
+    """
+    Evaluate model performance on test data.
+
+    Parameters:
+        model (sklearn Pipeline): Trained classification model.
+        X_test (pandas Series): Test messages.
+        Y_test (pandas DataFrame): True categories.
+    """
     y_pred = model.predict(X_test)
     test_results = []
     for i,column in enumerate(Y_test.columns):
@@ -63,6 +95,13 @@ def evaluate_model(model, X_test, Y_test):
     print('Average Precision:',test_results_df['Precision'].mean())
 
 def save_model(model, model_filepath):
+    """
+    Save the trained model to a pickle file.
+
+    Parameters:
+        model (sklearn Pipeline): Trained classification model.
+        model_filepath (str): Filepath to save the model.
+    """
     pickle.dump(model, open(model_filepath, 'wb'))
 
 

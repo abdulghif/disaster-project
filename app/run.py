@@ -1,16 +1,18 @@
 import json
 import plotly
 import pandas as pd
+import nltk
+from collections import Counter
+import plotly.express as px
 
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 
 from flask import Flask
 from flask import render_template, request, jsonify
-from plotly.graph_objs import Bar
+from plotly.graph_objs import Bar, Pie
 import joblib
 from sqlalchemy import create_engine
-
 
 app = Flask(__name__)
 
@@ -32,69 +34,79 @@ df = pd.read_sql_table('messages_clean_table', engine)
 # load model
 model = joblib.load("../models/classifier.pkl")
 
-
-# index webpage displays cool visuals and receives user input text for model
 @app.route('/')
 @app.route('/index')
 def index():
-    
-    # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals
+
+    # Extract data for the visuals
+
+    # Visual 1: Distribution of Message Genres
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
 
-    # create visuals
-    # TODO: Below is an example - modify to create your own visuals
-    graphs = [
-        {
-            'data': [
-                Bar(
-                    x=genre_names,
-                    y=genre_counts
-                )
-            ],
+    # Visual 2: Most Frequent Categories
+    category_sums = df.iloc[:, 4:].sum().sort_values(ascending=False)
+    category_names = list(category_sums.index)
 
-            'layout': {
-                'title': 'Distribution of Message Genres',
-                'yaxis': {
-                    'title': "Count"
-                },
-                'xaxis': {
-                    'title': "Genre"
-                }
-            }
+    # Visual 3: Proportion of 'Related' Messages
+    related_counts = df['related'].value_counts()
+    related_names = ['Related', 'Not Related']
+
+    # Visual 4: Most Frequent Words in Messages
+    words = []
+    for message in df['message']:
+        tokens = tokenize(message)
+        words.extend(tokens)
+    word_count = Counter(words)
+    common_words = word_count.most_common(10)
+    common_word_names = [word[0] for word in common_words]
+    common_word_values = [word[1] for word in common_words]
+
+    # Create visuals
+    graphs = [
+        # Visual 1
+        {
+            'data': [Bar(x=genre_names, y=genre_counts)],
+            'layout': {'title': 'Distribution of Message Genres', 'xaxis': {'title': 'Genre'}, 'yaxis': {'title': 'Count'}}
+        },
+        # Visual 2
+        {
+            'data': [Bar(x=category_names, y=category_sums)],
+            'layout': {'title': 'Most Frequent Categories', 'xaxis': {'title': 'Category'}, 'yaxis': {'title': 'Count'}}
+        },
+        # Visual 3
+        {
+            'data': [Pie(labels=related_names, values=related_counts)],
+            'layout': {'title': 'Proportion of Messages that are Related to Disasters'}
+        },
+        # Visual 4
+        {
+            'data': [Bar(x=common_word_names, y=common_word_values)],
+            'layout': {'title': 'Most Frequent Words in Messages', 'xaxis': {'title': 'Word'}, 'yaxis': {'title': 'Count'}}
         }
     ]
-    
-    # encode plotly graphs in JSON
+
+    # Encode Plotly graphs in JSON
     ids = ["graph-{}".format(i) for i, _ in enumerate(graphs)]
     graphJSON = json.dumps(graphs, cls=plotly.utils.PlotlyJSONEncoder)
-    
-    # render web page with plotly graphs
+
+    # Render web page with Plotly graphs
     return render_template('master.html', ids=ids, graphJSON=graphJSON)
 
-
-# web page that handles user query and displays model results
 @app.route('/go')
 def go():
-    # save user input in query
-    query = request.args.get('query', '') 
-
-    # use model to predict classification for query
+    query = request.args.get('query', '')
     classification_labels = model.predict([query])[0]
     classification_results = dict(zip(df.columns[4:], classification_labels))
 
-    # This will render the go.html Please see that file. 
     return render_template(
         'go.html',
         query=query,
         classification_result=classification_results
     )
 
-
 def main():
     app.run(host='0.0.0.0', port=3001, debug=True)
-
 
 if __name__ == '__main__':
     main()

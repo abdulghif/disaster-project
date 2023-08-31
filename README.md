@@ -10,11 +10,11 @@ This project aims to build a machine learning pipeline to categorize emergency m
 
     - To execute the ETL pipeline that cleans and stores the data in a SQLite database:
     ```
-    python data/process_data.py data/disaster_messages.csv data/disaster_categories.csv data/DisasterResponse.db
+    python data/process_data.py data/disaster_messages.csv data/disaster_categories.csv data/disaster.db
     ```
     - To run the machine learning pipeline that trains the classifier and saves the model:
     ```
-    python models/train_classifier.py data/DisasterResponse.db models/classifier.pkl
+    python models/train_classifier.py data/disaster.db models/classifier.pkl
     ```
 
 ### Running the Web App
@@ -35,10 +35,8 @@ This project aims to build a machine learning pipeline to categorize emergency m
         - disaster_messages.csv
         - disaster_categories.csv
         - process_data.py
-        - DisasterResponse.db
     - models
         - train_classifier.py
-        - classifier.pkl
     - app
         - run.py
         - templates
@@ -52,12 +50,11 @@ This project aims to build a machine learning pipeline to categorize emergency m
         - `disaster_messages.csv`: Input file containing emergency messages from various sources.
         - `disaster_categories.csv`: Contains categories that correspond to the messages.
         - `process_data.py`: Script responsible for the ETL pipeline.
-        - `DisasterResponse.db`: SQLite database that stores the cleaned data.
     - **models**: Contains machine learning pipeline script and saved model.
         - `train_classifier.py`: Script that trains a classifier on the cleaned data.
-        - `classifier.pkl`: Trained machine learning model saved as a pickle file.
     - **app**: Contains web application scripts and templates.
         - `run.py`: Script to launch the web application.
+        - `src.py`: Additional script to support model function
         - **templates**: Folder containing HTML templates.
             - Various HTML files (e.g., `index.html`, `go.html`): HTML templates for the web application.
     - `README.md`: This file, explaining the project and its structure.

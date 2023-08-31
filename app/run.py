@@ -1,9 +1,8 @@
 import json
 import plotly
 import pandas as pd
-import nltk
+from src import   custom_multiclf_score
 from collections import Counter
-import plotly.express as px
 
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
@@ -28,7 +27,7 @@ def tokenize(text):
     return clean_tokens
 
 # load data
-engine = create_engine('sqlite:///../data/DisasterResponse.db')
+engine = create_engine('sqlite:///../data/disaster.db')
 df = pd.read_sql_table('messages_clean_table', engine)
 
 # load model

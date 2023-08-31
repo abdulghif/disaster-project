@@ -1,6 +1,6 @@
 import sys
 import pandas as pd
-from src import get_score
+from src import get_score, score
 from sqlalchemy import create_engine
 
 import re
@@ -14,7 +14,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.pipeline import Pipeline
 
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV
 
 import pickle
 
@@ -51,7 +51,6 @@ def tokenize(text):
     words = word_tokenize(text)
     words = [w for w in words if w not in stopwords.words("english")]
     
-    words = [PorterStemmer().stem(w) for w in words]
     words = [WordNetLemmatizer().lemmatize(w) for w in words]
     
     return words
@@ -72,7 +71,22 @@ def build_model():
         ('vectorizer',vectorizer),
         ('model',rf)
     ])
-    return pipeline
+
+    parameters = {
+        'model__max_depth':[2,4,None],
+        'model__max_features':['sqrt','log2'],
+    }
+
+    cv = GridSearchCV(
+        estimator=pipeline,
+        param_grid=parameters,
+        scoring=score,
+        cv=5, 
+        refit=True, 
+        return_train_score=True,
+        verbose=10
+    )
+    return cv
 
 def evaluate_model(model, X_test, Y_test):
     """

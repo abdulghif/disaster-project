@@ -1,4 +1,5 @@
 # Disaster Response Pipeline Project
+![Intro Pic](screenshots/pict1.png)
 
 ## Summary
 This project aims to build a machine learning pipeline to categorize emergency messages based on the needs communicated by the sender. During natural disasters, organizations receive millions of emergency messages, and it's not feasible to read through each one manually. This pipeline categorizes these messages to ensure they are sent to the appropriate disaster relief agency, thereby facilitating quicker and more effective responses. The project includes an ETL Pipeline to clean the data, a Machine Learning Pipeline to build a message classification model, and a web application to showcase these real-world applications.
@@ -58,5 +59,14 @@ This project aims to build a machine learning pipeline to categorize emergency m
         - **templates**: Folder containing HTML templates.
             - Various HTML files (e.g., `index.html`, `go.html`): HTML templates for the web application.
     - `README.md`: This file, explaining the project and its structure.
+
+
+## Screenshots
+
+- Picture 2
+![Intro Pic](screenshots/pict2.png)
+
+- Picture 3
+![Intro Pic](screenshots/pict3.png)
 
 Feel free to contact for any more clarification or details.

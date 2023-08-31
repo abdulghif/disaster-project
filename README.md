@@ -6,6 +6,14 @@ This project aims to build a machine learning pipeline to categorize emergency m
 
 ## Instructions
 
+### Setting up environment:
+Install these requirements using the same version of Python, 3.10.9:
+
+```
+pip install -r requirements.txt
+```
+
+
 ### Setting up Database and Model
 1. Navigate to the project's root directory and run the following commands to set up the database and machine learning model:
 
